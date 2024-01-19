@@ -30,7 +30,7 @@ const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
             <Card.Footer>
                 <div className="btn-wrapper text-center d-flex justify-content-between">
                     <Button variant="secondary" href={pageUrl}>Подробнее</Button>
-                    <Button variant="warning" onClick={deleteRestoreRegion}>Изменить статус</Button>
+                    <Button variant="warning" onClick={deleteRestoreRegion}>Удалить</Button>
                 </div>
             </Card.Footer>
         </Card>

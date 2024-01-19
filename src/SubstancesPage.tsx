@@ -2,7 +2,7 @@ import {FC, useEffect, useState} from 'react'
 import './SubstancesPage.css'
 
 import { Substance } from './modules/ds'
-import { getSubstances } from './modules/get-substances.ts';
+import { GetSubstancesResponse, getSubstances } from './modules/get-substances.ts';
 
 import { Col, Row} from 'react-bootstrap'
 import SubstanceCard from './components/SubstanceCard.tsx';
@@ -22,9 +22,12 @@ const SubstancesPage: FC = () => {
         }
 
         const loadSubstances = async()  => {
-            const result = await getSubstances(String(substanceName))
+            const result : GetSubstancesResponse = await getSubstances(String(substanceName))
             console.log(result)
-            setSubstances(result)
+            if (result.Substances) {
+                setSubstances(result.Substances)
+            }
+
 
         }
 
@@ -45,7 +48,7 @@ const SubstancesPage: FC = () => {
                 {substances.map((item, index) => (
                     <Col key={index}>
                         <SubstanceCard {...{
-                            imageUrl: (item.Image == '' ? defaultImage?.toString() : "data:image/jpg;base64, " + item.Image),
+                            imageUrl: (item.Image == '' ? defaultImage?.toString() : item.Image?.toString()),
                             SubstanceName: item.Title,
                             pageUrl: window.location.href.split('?')[0] + "substance?substance_name=" + item.Title
                         }}></SubstanceCard>

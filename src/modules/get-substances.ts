@@ -1,7 +1,11 @@
 import {Substance} from './ds'
 
+export interface GetSubstancesResponse {
+    Substances: Substance[],
+    CherId: number,
+}
 
-export const getSubstances = async (namePattern = '') : Promise<Substance[]> => {
+export const getSubstances = async (namePattern = '') : Promise<GetSubstancesResponse> => {
     return fetch('/api/substances?name_pattern=' + String(namePattern))
         .then((response) => response.json())
         .catch(() => ([

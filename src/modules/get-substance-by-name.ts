@@ -1,7 +1,7 @@
 import {Substance} from './ds'
 
 export const getSubstanceByName = async  (substanceName = ''): Promise<Substance[]> => {
-    return fetch('/api/substance/' + String(substanceName),{
+    return fetch('/api/substances/' + String(substanceName),{
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -19,4 +19,3 @@ export const getSubstanceByName = async  (substanceName = ''): Promise<Substance
                 "Image": ""
             }));
 }
-
