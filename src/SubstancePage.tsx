@@ -18,8 +18,8 @@ const SubstancePage: FC = () => {
         const SubstanceName = urlParams.get('substance_name')
 
         const loadRegion = async () => {
-            const result: Substance[] = await getSubstanceByName(String(SubstanceName))
-            const substanceData = result[0];
+            const result: Substance = await getSubstanceByName(String(SubstanceName))
+            const substanceData = result;
             // console.log(result)
             setSubstance(substanceData)
             // console.log(substance)
@@ -32,7 +32,7 @@ const SubstancePage: FC = () => {
     return (
         <div className='card_container'>
             <Card className='page_card'>
-                <Card.Img src={(substance?.Image == '' ? defaultImage?.toString() : substance?.Image)} className="card-img-top" variant="top" />                <Card.Body>
+                <Card.Img src={(substance?.Image == '' ? defaultImage?.toString() :  substance?.Image)} className="card-img-top" variant="top" />                <Card.Body>
                 <p>{substance?.Title && substance.Title}</p>
                 <p> <b>Статус субстанции: {substance?.Status && substance.Status}</b></p>
                 <p> Класс: {substance?.Class && substance.Class}</p>
