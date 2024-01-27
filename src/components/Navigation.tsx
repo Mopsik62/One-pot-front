@@ -10,8 +10,9 @@ function Navigation() {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="/One-pot-front/account/">Личный кабинет</Nav.Link>
-                        <Nav.Link href="/One-pot-front/contacts/">Контакты</Nav.Link>
+                        <Nav.Link href="/One-pot-front/syntheses">Заявки</Nav.Link>
+                        <Nav.Link href="/One-pot-front/auth">Вход</Nav.Link>
+                        <Nav.Link href="/One-pot-front/account">Аккаунт</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

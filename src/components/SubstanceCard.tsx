@@ -1,5 +1,5 @@
-import {FC} from 'react'
-import {Button, Card} from 'react-bootstrap'
+import { FC } from 'react'
+import { Button, Card } from 'react-bootstrap'
 import './SubstanceCard.css'
 
 interface Props {

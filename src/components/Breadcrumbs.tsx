@@ -23,7 +23,6 @@ function Breadcrumbs() {
                     <Breadcrumb.Item active> Поиск </Breadcrumb.Item>
                     <Breadcrumb.Item href = {window.location.search}>{name_pattern}</Breadcrumb.Item>
                 </>
-
             }
         </Breadcrumb>
     );
