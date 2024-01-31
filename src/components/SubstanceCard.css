@@ -1,9 +1,23 @@
-.card {
-    width: 325px;
-    height: 500px;
+/* Обертка для Card.Body */
+.card-body-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Выравнивание по центру */
 }
 
-.card-img-top {
-    width: 300px;
-    height: 350px;
+/* Стиль для ButtonGroup */
+.button-group {
+    margin-top: auto; /* Размещение внизу блока (вместо mt-auto) */
+}
+
+/* Стиль для каждой кнопки */
+.button-group .btn {
+    margin-bottom: 5px; /* Разделение между кнопками */
+}
+
+/* Стиль для картинок внутри карточек */
+.card img {
+    object-fit: contain ; /* Используйте cover, чтобы изображение занимало всю площадь и сохраняло пропорции */
+    height: 200px; /* Установите желаемую высоту (замените на нужное значение) */
+    width: 100%; /* 100% ширины для заполнения контейнера */
 }

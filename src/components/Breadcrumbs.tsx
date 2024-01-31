@@ -12,6 +12,15 @@ function Breadcrumbs() {
     return (
         <Breadcrumb>
             <Breadcrumb.Item href="/One-pot-front/">Домашняя страница</Breadcrumb.Item>
+            {window.location.pathname == '/One-pot-front/auth' &&
+                <Breadcrumb.Item>Вход</Breadcrumb.Item>
+            }
+            {window.location.pathname == '/One-pot-front/account' &&
+                <Breadcrumb.Item>Аккаунт</Breadcrumb.Item>
+            }
+            {window.location.pathname == '/One-pot-front/syntheses' &&
+                <Breadcrumb.Item>Синтезы</Breadcrumb.Item>
+            }
             {(substance_name != null && name_pattern === null) &&
                 <>
                     <Breadcrumb.Item active> Субстанция </Breadcrumb.Item>
@@ -23,6 +32,9 @@ function Breadcrumbs() {
                     <Breadcrumb.Item active> Поиск </Breadcrumb.Item>
                     <Breadcrumb.Item href = {window.location.search}>{name_pattern}</Breadcrumb.Item>
                 </>
+            }
+            {window.location.pathname == '/One-pot-front/order' &&
+                <Breadcrumb.Item>Заказ</Breadcrumb.Item>
             }
         </Breadcrumb>
     );

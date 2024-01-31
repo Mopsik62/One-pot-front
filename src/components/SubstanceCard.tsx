@@ -1,6 +1,11 @@
 import { FC } from 'react'
-import { Button, Card } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import {Button, ButtonGroup, Card} from 'react-bootstrap'
+import store, { useAppDispatch } from '../store/store'
+
 import './SubstanceCard.css'
+
+import cartSlice from '../store/cartSlice'
 
 interface Props {
     imageUrl: string
@@ -8,11 +13,16 @@ interface Props {
     pageUrl: string
 }
 
-
-
 const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
+    const dispatch = useAppDispatch()
 
-    const deleteRestoreRegion = async () => {
+    const {userRole} = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
+
+    const addSubstnaceToCard = () => {
+        dispatch(cartSlice.actions.addSubstance(SubstanceName))
+    }
+
+    const deleteSubstance = async () => {
         await fetch('/api/substance/delete/' + SubstanceName, {
             method: 'PUT'
         });
@@ -20,19 +30,19 @@ const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
     }
 
     return (
-        <Card>
-            <Card.Img className="card-img-top" variant="top" src={imageUrl}/>
-            <Card.Body>
-                <div className='textStyle'>
-                    <Card.Title> {SubstanceName} </Card.Title>
-                </div>
+        <Card className='w-70 h-100'>
+            <Card.Img variant="top" src={imageUrl}/>
+            <Card.Body className='d-flex flex-column card-body-wrapper'>
+                <Card.Title> {SubstanceName} </Card.Title>
+                <ButtonGroup className='text-center button-group'>
+                    <Button variant="info" href={pageUrl}>Подробнее</Button>
+                    {((userRole?.toString() === 'Moderator') || (userRole?.toString() === 'Admin')) &&
+                        <Button variant="warning" onClick={deleteSubstance}>Удалить</Button>
+                    }
+                    <Button variant="success" onClick={addSubstnaceToCard}>Заказать</Button>
+                </ButtonGroup>
             </Card.Body>
-            <Card.Footer>
-                <div className="btn-wrapper text-center d-flex justify-content-between">
-                    <Button variant="secondary" href={pageUrl}>Подробнее</Button>
-                    <Button variant="warning" onClick={deleteRestoreRegion}>Удалить</Button>
-                </div>
-            </Card.Footer>
+
         </Card>
 
     )

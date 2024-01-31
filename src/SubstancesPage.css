@@ -1,0 +1,11 @@
+/* Стиль для модального футера */
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Стиль для кнопки "Ок" */
+.modal-footer button {
+    margin: 0; /* Уберем отступы, чтобы кнопка была ближе к центру */
+}

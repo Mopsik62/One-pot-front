@@ -1,17 +1,24 @@
 import {FC, useEffect, useState} from 'react'
+import { useSelector } from 'react-redux'
 import './SubstancesPage.css'
 
 import { Substance } from './modules/ds'
 import { GetSubstancesResponse, getSubstances } from './modules/get-substances.ts';
 
-import { Col, Row} from 'react-bootstrap'
+import { Col, Row, Modal, Button } from 'react-bootstrap'
 import SubstanceCard from './components/SubstanceCard.tsx';
+import SubstancesFilter from './components/SubstancesFilter';
 
-import defaultImage from './assets/react.svg'
+import store, { useAppDispatch } from './store/store';
+import cartSlice from './store/cartSlice';
+
 
 const SubstancesPage: FC = () => {
+    const dispatch = useAppDispatch()
+
 
     const [substances, setSubstances] = useState<Substance[]>([])
+    const {ordered} = useSelector((state: ReturnType<typeof store.getState> ) => state.cart)
 
     useEffect(() => {
         const queryString = window.location.search;
@@ -23,7 +30,7 @@ const SubstancesPage: FC = () => {
 
         const loadSubstances = async()  => {
             const result : GetSubstancesResponse = await getSubstances(String(substanceName))
-            console.log(result)
+            // console.log(result)
             if (result.Substances) {
                 setSubstances(result.Substances)
             }
@@ -35,20 +42,30 @@ const SubstancesPage: FC = () => {
 
     }, []);
 
+    const handleModalClose= () => {
+        dispatch(cartSlice.actions.disableOrdered())
+    }
+
     return (
         <div>
-            <div>
-                <form method="GET" action="" name="search">
-                    <input type="text" id="substance_search" name="name_pattern"/>
-                    <input type="submit" className="button" value="Поиск" ></input>
-                </form>
-            </div>
+            <Modal show={ordered} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Субстанция добавлена в корзину</Modal.Title>
+                </Modal.Header>
+                <Modal.Footer className="d-flex justify-content-center align-items-center">
+                    <Button variant="success" onClick={() => {dispatch(cartSlice.actions.disableOrdered())}}>
+                        Ок
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <SubstancesFilter></SubstancesFilter>
+            <p></p>
 
             <Row xs={4} md={4} className='g-4' >
                 {substances.map((item, index) => (
                     <Col key={index}>
                         <SubstanceCard {...{
-                            imageUrl: (item.Image == '' ? defaultImage?.toString() : item.Image?.toString()),
+                            imageUrl: (item.Image == '' ? 'http://127.0.0.1:9000/substances/default.jpg' : item.Image?.toString()),
                             SubstanceName: item.Title,
                             pageUrl: window.location.href.split('?')[0] + "substance?substance_name=" + item.Title
                         }}></SubstanceCard>

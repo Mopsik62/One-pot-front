@@ -3,10 +3,9 @@ import {Button, Card} from 'react-bootstrap'
 
 import './SubstancePage.css'
 
-import {getSubstanceByName} from './modules/get-substance-by-name.ts'
+import {getSubstance} from './modules/get-substance.ts'
 import {Substance} from './modules/ds'
 
-import defaultImage from './assets/react.svg'
 
 const SubstancePage: FC = () => {
 
@@ -18,7 +17,7 @@ const SubstancePage: FC = () => {
         const SubstanceName = urlParams.get('substance_name')
 
         const loadRegion = async () => {
-            const result: Substance = await getSubstanceByName(String(SubstanceName))
+            const result: Substance = await getSubstance(String(SubstanceName))
             const substanceData = result;
             // console.log(result)
             setSubstance(substanceData)
@@ -31,20 +30,21 @@ const SubstancePage: FC = () => {
 
     return (
         <div className='card_container'>
-            <Card className='page_card'>
-                <Card.Img src={(substance?.Image == '' ? defaultImage?.toString() :  substance?.Image)} className="card-img-top" variant="top" />                <Card.Body>
-                <p>{substance?.Title && substance.Title}</p>
-                <p> <b>Статус субстанции: {substance?.Status && substance.Status}</b></p>
-                <p> Класс: {substance?.Class && substance.Class}</p>
-                <p> Формула: {substance?.Formula && substance.Formula} </p>
+            <Card style={{width: '300px'}}>
+                <Card.Img src={(substance?.Image == '' ? 'http://127.0.0.1:9000/substances/default.jpg' :  substance?.Image)} className="card_image" variant="top" />
+                <Card.Body>
+
+                        <p>{substance?.Title && substance.Title}</p>
+                        <p> <b>Статус субстанции: {substance?.Status && substance.Status}</b></p>
+                        <p> Класс: {substance?.Class && substance.Class}</p>
+                        <p> Формула: {substance?.Formula && substance.Formula}</p>
+
             </Card.Body>
                 <Card.Footer>
                     <Button href="/One-pot-front/">Домой</Button>
                 </Card.Footer>
             </Card>
         </div>
-
-
     )
 }
 

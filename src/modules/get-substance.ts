@@ -2,7 +2,7 @@ import {Substance} from './ds'
 
 
 
-export const getSubstanceByName = async  (substanceName = ''): Promise<Substance> => {
+export const getSubstance = async  (substanceName = ''): Promise<Substance> => {
     return fetch('/api/substances/' + String(substanceName),{
         method: 'GET',
         headers: {

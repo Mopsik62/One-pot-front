@@ -3,20 +3,24 @@ import { registerUser, loginUser, logoutUser } from "../modules/authActions"
 
 const userToken = localStorage.getItem('userToken') || ''
 const userName = localStorage.getItem('userName') || ''
+const userRole = localStorage.getItem('userRole')?.toString() || 'Undefined'
 
 interface AuthState {
     loading: boolean
     userToken: string
     userName: string
+    userRole: string
     userInfo: {}
     error: null | any
     success: boolean
 }
 
+
 const initialState: AuthState = {
     loading: false,
     userToken,
     userName,
+    userRole,
     userInfo: {},
     error: null,
     success: false,
