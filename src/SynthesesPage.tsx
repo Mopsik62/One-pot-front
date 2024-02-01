@@ -17,15 +17,18 @@ const SynthesesPage: FC = () => {
     const [synthesesArray, setSynthesesArray] = useState<string[][]>([])
 
     useEffect(() => {
-        var syntheses: Syntheses[] = []
 
         const loadSyntheses = async()  => {
+            var syntheses: Syntheses[] = []
+
             if (userToken !== undefined) {
                 const queryString = window.location.search;
                 const urlParams = new URLSearchParams(queryString)
-                var status = urlParams.get('status')
+                let status = urlParams.get('status')
+                let startDate = urlParams.get('date1')
+                let endDate = urlParams.get('date2')
 
-                syntheses = await getSyntheses(userToken?.toString(), status?.toString())
+                syntheses = await getSyntheses(userToken?.toString(), status?.toString(), startDate?.toString(), endDate?.toString())
                // console.log(syntheses)
                 // console.log(userToken)
 
@@ -75,6 +78,13 @@ const SynthesesPage: FC = () => {
         }
         loadSyntheses()
 
+        const intervalId = setInterval(() => {
+            loadSyntheses();
+        }, 5000);
+
+        // Очистка интервала при размонтировании компонента
+        return () => clearInterval(intervalId);
+
         console.log(userRole?.toString() == 'Moderator')
 
     }, [])
@@ -102,9 +112,7 @@ const SynthesesPage: FC = () => {
                     <th scope='col'>Дата создания</th>
                     <th scope='col'>Дата обработки</th>
                     <th scope='col'>Дата завершения</th>
-                    {((userRole?.toString() == 'Moderator') || (userRole?.toString() == 'Admin')) &&
-                        <th scope='col'></th>
-                    }
+                    <th scope='col'></th>
                 </tr>
 
                 </thead>
@@ -117,7 +125,12 @@ const SynthesesPage: FC = () => {
                         }
                         {((userRole?.toString() == 'Moderator') || (userRole?.toString() == 'Admin')) &&
                             <td>
-                                <Button href={'/One-pot-front/synthesis?synthesis_id=' + synthesesArray[rowID][0]}>Изменить</Button>
+                                <Button href={'/One-pot-front/synthesis_edit?synthesis_id=' + synthesesArray[rowID][0]}>Изменить</Button>
+                            </td>
+                        }
+                        {(userRole?.toString() == 'User') &&
+                            <td>
+                                <Button href={'/One-pot-front/synthesis?synthesis_id=' + synthesesArray[rowID][0]}>Просмотр</Button>
                             </td>
                         }
                     </tr>

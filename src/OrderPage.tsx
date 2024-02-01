@@ -7,12 +7,6 @@ import cartSlice from "./store/cartSlice";
 import store, { useAppDispatch } from "./store/store";
 import { order } from "./modules/order.tsx";
 
-
-
-//interface InputChangeInterface {
-//    target: HTMLInputElement;
-//}
-
 const OrderPage: FC = () => {
 
     const [additionalConditions, setConditions] = useState('')

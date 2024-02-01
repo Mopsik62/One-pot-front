@@ -13,7 +13,7 @@ interface InputChangeInterface {
 }
 
 const AuthPage: FC = () => {
-    const {userToken, loading, userName, error, success} = useSelector(
+    const {userToken, loading, userName, success} = useSelector(
         (state: ReturnType<typeof store.getState>) => state.auth
     )
 

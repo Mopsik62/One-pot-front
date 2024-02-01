@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import {Syntheses} from './ds'
 
-export const getSyntheses = async (userToken = '', status = ''): Promise<Syntheses[]> => {
+export const getSyntheses = async (userToken = '', status = '', startDate = '', endDate = ''): Promise<Syntheses[]> => {
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -10,13 +10,9 @@ export const getSyntheses = async (userToken = '', status = ''): Promise<Synthes
         },
     }
     return axios.get(
-        `/api/syntheses?status=` + status,
+        `/api/syntheses?status=` + status + '&date1=' + startDate + '&date2=' + endDate,
         config,
     )
-        .then((response) => {
-            const { data } = response
-
-            return data;
-        })
+        .then((response) => response.data)
 
 }

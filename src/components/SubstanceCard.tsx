@@ -22,12 +22,12 @@ const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
         dispatch(cartSlice.actions.addSubstance(SubstanceName))
     }
 
-    const deleteSubstance = async () => {
-        await fetch('/api/substance/delete/' + SubstanceName, {
-            method: 'PUT'
-        });
-        window.location.replace('/')
-    }
+    // const deleteSubstance = async () => {
+    //     await fetch('/api/substance/delete/' + SubstanceName, {
+    //         method: 'PUT'
+    //     });
+    //     window.location.replace('/')
+    // }
 
     return (
         <Card className='w-70 h-100'>
@@ -37,7 +37,7 @@ const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
                 <ButtonGroup className='text-center button-group'>
                     <Button variant="info" href={pageUrl}>Подробнее</Button>
                     {((userRole?.toString() === 'Moderator') || (userRole?.toString() === 'Admin')) &&
-                        <Button variant="warning" onClick={deleteSubstance}>Удалить</Button>
+                        <Button variant="warning" href={"/One-pot-front/substance_edit?name=" + SubstanceName  }>Изменить</Button>
                     }
                     <Button variant="success" onClick={addSubstnaceToCard}>Заказать</Button>
                 </ButtonGroup>

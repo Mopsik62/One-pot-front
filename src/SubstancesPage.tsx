@@ -5,15 +5,19 @@ import './SubstancesPage.css'
 import { Substance } from './modules/ds'
 import { GetSubstancesResponse, getSubstances } from './modules/get-substances.ts';
 
-import { Col, Row, Modal, Button } from 'react-bootstrap'
+import { Row, Modal, Button } from 'react-bootstrap'
 import SubstanceCard from './components/SubstanceCard.tsx';
 import SubstancesFilter from './components/SubstancesFilter';
 
 import store, { useAppDispatch } from './store/store';
 import cartSlice from './store/cartSlice';
 
+import ModSubstancesPage from './ModSubstancesPage';
+
 
 const SubstancesPage: FC = () => {
+    const {userRole} = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
+
     const dispatch = useAppDispatch()
 
 
@@ -21,14 +25,15 @@ const SubstancesPage: FC = () => {
     const {ordered} = useSelector((state: ReturnType<typeof store.getState> ) => state.cart)
 
     useEffect(() => {
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString)
-        var substanceName = urlParams.get('name_pattern')
-        if (substanceName == null) {
-            substanceName = "";
-        }
 
         const loadSubstances = async()  => {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString)
+            let substanceName = urlParams.get('name_pattern')
+            if (substanceName == null) {
+                substanceName = "";
+            }
+
             const result : GetSubstancesResponse = await getSubstances(String(substanceName))
             // console.log(result)
             if (result.Substances) {
@@ -46,6 +51,12 @@ const SubstancesPage: FC = () => {
         dispatch(cartSlice.actions.disableOrdered())
     }
 
+    if (userRole?.toString() == 'Moderator' || userRole?.toString() == 'Admin') {
+        return (
+            <ModSubstancesPage></ModSubstancesPage>
+        )
+    }
+
     return (
         <div>
             <Modal show={ordered} onHide={handleModalClose}>
@@ -61,15 +72,15 @@ const SubstancesPage: FC = () => {
             <SubstancesFilter></SubstancesFilter>
             <p></p>
 
-            <Row xs={4} md={4} className='g-4' >
+            <Row xs={8} md={8} className='g-4' >
                 {substances.map((item, index) => (
-                    <Col key={index}>
+                    <div className="col-2" key={index}>
                         <SubstanceCard {...{
                             imageUrl: (item.Image == '' ? 'http://127.0.0.1:9000/substances/default.jpg' : item.Image?.toString()),
                             SubstanceName: item.Title,
                             pageUrl: window.location.href.split('?')[0] + "substance?substance_name=" + item.Title
                         }}></SubstanceCard>
-                    </Col>
+                    </div>
                 ))}
             </Row>
 

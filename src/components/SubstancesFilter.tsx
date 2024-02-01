@@ -21,7 +21,7 @@ const SubstancesFilter: FC = () => {
     const [name, setName] = useState('')
 
     useEffect(() => {
-        console.log('Filters page got regionName: ' + substanceName)
+        console.log('Filters page got substanceName: ' + substanceName)
     }, [])
 
     const applyFilters = () => {

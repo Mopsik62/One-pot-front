@@ -1,16 +1,17 @@
 import {Substance} from './ds'
-
+import axios from 'axios';
 
 
 export const getSubstance = async  (substanceName = ''): Promise<Substance> => {
-    return fetch('/api/substances/' + String(substanceName),{
-        method: 'GET',
+    const config = {
         headers: {
-            'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-    })
-        .then((response) => response.json())
+    }
+    return axios.get(
+        '/api/substances/' + String(substanceName),
+        config)
+        .then((response) => response.data)
         .catch(() => {
             const offline_substances: Substance[] =  [
                 {

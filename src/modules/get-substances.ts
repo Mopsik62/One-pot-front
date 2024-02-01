@@ -1,4 +1,5 @@
 import {Substance} from './ds'
+import axios from 'axios';
 
 
 export interface GetSubstancesResponse {
@@ -33,8 +34,15 @@ const offline_substances: Substance[] =  [
     },];
 
 export const getSubstances = async (namePattern = '') : Promise<GetSubstancesResponse> => {
-    return fetch('/api/substances?name_pattern=' + String(namePattern))
-        .then((response) => response.json())
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    }
+    return axios.get(
+        '/api/substances?name_pattern=' + String(namePattern),
+        config)
+        .then((response) => response.data)
 
         .catch(() => {
             // Фильтрация субстанций по заданному namePattern

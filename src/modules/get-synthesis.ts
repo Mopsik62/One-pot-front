@@ -12,9 +12,5 @@ export const getSynthesis = async(synthesis_id = 0, userToken = ''): Promise<Syn
     return axios.get(
         '/api/syntheses/' +  String(synthesis_id),
         config)
-        .then((response) => {
-            const {data} = response
-
-            return data;
-        })
+        .then((response) => response.data)
 }
