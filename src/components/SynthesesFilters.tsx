@@ -15,22 +15,26 @@ const SynthesesFilter: FC = () => {
     const statusRef = useRef<any>(null)
     const startDateRef = useRef<any>(null)
     const endDateRef = useRef<any>(null)
+    const synthesisCreatorRef = useRef<any>(null)
 
-    const {synthesisStatus, startDate, endDate} = useSelector((state: ReturnType<typeof store.getState>) => state.filters)
+
+    const {synthesisStatus, startDate, endDate, synthesisCreator} = useSelector((state: ReturnType<typeof store.getState>) => state.filters)
+    const {userRole} = useSelector(
+        (state: ReturnType<typeof store.getState> ) => state.auth
+    )
 
     const applyFilters = () => {
         let status = statusRef.current.value
         let startDate = startDateRef.current.value
         let endDate = endDateRef.current.value
-
-        if (startDate) {
-            startDate += ':00Z';
-        }
-
-        if (endDate) {
-            endDate += ':00Z'
-        }
-
+        // if (startDate) {
+        //     startDate += ':00Z';
+        // }
+        //
+        // if (endDate) {
+        //     endDate += ':00Z'
+        // }
+        console.log(startDate)
         dispatch(filtersSlice.actions.setSynthesisStatus(status))
         dispatch(filtersSlice.actions.setStartDate(startDate))
         dispatch(filtersSlice.actions.setEndDate(endDate))
@@ -39,7 +43,7 @@ const SynthesesFilter: FC = () => {
             status = ""
         }
 
-
+        //2024-02-01T15:25:00Z
         let url = '/One-pot-front/syntheses?status=' + status;
         url += '&date1=' + startDate + '&date2=' + endDate
 
@@ -62,13 +66,26 @@ const SynthesesFilter: FC = () => {
                             <option>Все</option>
                         </FormSelect>
                     </Col>
+                    {userRole?.toString() == 'Moderator' &&
+                        <>
+                            <Col>
+                                <FormLabel>Создатель:</FormLabel>
+                            </Col>
+                            <Col>
+                                <input
+                                    defaultValue={synthesisCreator?.toString()}
+                                    ref={synthesisCreatorRef}
+                                />
+                            </Col>
+                        </>
+                    }
                     <Col>
                         <FormLabel>Создана с:</FormLabel>
                     </Col>
                     <Col>
                         <input
-                            type="datetime-local"
-                            defaultValue={startDate?.toString().slice(0, -4)}
+                            type="date"
+                            defaultValue={startDate?.toString()}
                             ref={startDateRef}
                         />
                     </Col>
@@ -78,13 +95,13 @@ const SynthesesFilter: FC = () => {
                     <Col>
                         <FormLabel></FormLabel>
                         <input
-                            type="datetime-local"
-                            defaultValue={endDate?.toString().slice(0, -4)}
+                            type="date"
+                            defaultValue={endDate?.toString()}
                             ref={endDateRef}
                         />
                     </Col>
                 </Row>
-                <Button onClick={applyFilters}>Применить</Button>
+                <Button onClick={applyFilters}>Поиск</Button>
             </Form>
         </div>
     )

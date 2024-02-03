@@ -15,11 +15,16 @@ const endDate = localStorage.getItem('endDate')
     ? localStorage.getItem('endDate')
     : '';
 
+const synthesisCreator = localStorage.getItem('synthesisCreator')
+    ? localStorage.getItem('synthesisCreator')
+    : '';
+
 const initialState = {
     substanceName,
     synthesisStatus,
     startDate,
-    endDate
+    endDate,
+    synthesisCreator
 }
 
 const filtersSlice = createSlice({
@@ -42,6 +47,11 @@ const filtersSlice = createSlice({
         setEndDate(state, {payload}) {
             state.endDate = payload
             localStorage.setItem('endDate', payload)
+
+        },
+        setSynthesisCreator(state, {payload}) {
+            state.synthesisCreator = payload
+            localStorage.setItem('synthesisCreator', payload)
         }
     }
 })

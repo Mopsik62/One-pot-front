@@ -2,10 +2,13 @@ import { FC } from 'react'
 import { useSelector } from 'react-redux'
 import {Button, ButtonGroup, Card} from 'react-bootstrap'
 import store, { useAppDispatch } from '../store/store'
+import { order } from "../modules/order.tsx";
 
 import './SubstanceCard.css'
 
 import cartSlice from '../store/cartSlice'
+import { useNavigate } from 'react-router-dom'
+
 
 interface Props {
     imageUrl: string
@@ -15,11 +18,17 @@ interface Props {
 
 const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
-    const {userRole} = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
+    const { userToken} = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
 
-    const addSubstnaceToCard = () => {
+    const addSubstnaceToCard = async () => {
+        if (!userToken) {
+            return;
+        }
         dispatch(cartSlice.actions.addSubstance(SubstanceName))
+        await order(SubstanceName, userToken, "", "Черновик")
+        navigate('/One-pot-front/')
     }
 
     // const deleteSubstance = async () => {
@@ -36,13 +45,11 @@ const SubstanceCard: FC<Props> = ({ imageUrl, SubstanceName, pageUrl}) => {
                 <Card.Title> {SubstanceName} </Card.Title>
                 <ButtonGroup className='text-center button-group'>
                     <Button variant="info" href={pageUrl}>Подробнее</Button>
-                    {((userRole?.toString() === 'Moderator') || (userRole?.toString() === 'Admin')) &&
-                        <Button variant="warning" href={"/One-pot-front/substance_edit?name=" + SubstanceName  }>Изменить</Button>
-                    }
+                    { userToken &&
                     <Button variant="success" onClick={addSubstnaceToCard}>Заказать</Button>
+                    }
                 </ButtonGroup>
             </Card.Body>
-
         </Card>
 
     )

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export interface GetSubstancesResponse {
     Substances: Substance[],
-    CherId: number,
+    SynthesesChern: number,
 }
 
 const offline_substances: Substance[] =  [

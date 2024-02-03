@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Button, Table, Modal } from "react-bootstrap";
+import {Container, Button, Table, Modal, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 import store from "./store/store";
@@ -13,25 +13,19 @@ const ModSubstancesPage : FC = () => {
 
     const {userToken, userRole} = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
     const {ordered} = useSelector((state: ReturnType<typeof store.getState> ) => state.cart)
+    const {substanceName} = useSelector((state: ReturnType<typeof store.getState> ) => state.filters)
 
     const [substancesArray, setSubstancesArray] = useState<string[][]>([])
 
     useEffect(() =>  {
 
         const loadSubstances = async()  => {
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString)
-            let substanceName = urlParams.get('name_pattern')
-
-            if (substanceName == null) {
-                substanceName = "";
-            }
 
             const result = await getSubstances(String(substanceName))
-            const substances = result.Substances
+            if (result.Substances) {
             var arr: string[][] = []
-            for (let substance of substances) {
-                var substanceArray:string[] = []
+            for (let substance of result.Substances) {
+                var substanceArray: string[] = []
                 substanceArray.push(substance.Image.toString())
                 substanceArray.push(substance.ID.toString())
                 substanceArray.push(substance.Title)
@@ -40,13 +34,15 @@ const ModSubstancesPage : FC = () => {
 
                 arr.push(substanceArray)
             }
-            setSubstancesArray(arr);
+                setSubstancesArray(arr);
+            }
+
 
         }
 
         loadSubstances()
 
-    }, [])
+    }, [substanceName])
 
     const handleModalClose= () => {
         dispatch(cartSlice.actions.disableOrdered())
@@ -75,7 +71,13 @@ const ModSubstancesPage : FC = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <h1>Субстанции</h1>
+            <Container>
+                <Row className="justify-content-center">
+                    <Col xs="auto">
+                        <h1 className="text-center">Субстанции</h1>
+                    </Col>
+                </Row>
+            </Container>
             <SubstancesFilter></SubstancesFilter>
             <Table>
                 <thead className="thead-dark">
@@ -114,7 +116,9 @@ const ModSubstancesPage : FC = () => {
                 ))}
                 </tbody>
             </Table>
-
+            <Button href="/One-pot-front/substance_edit?name=new">
+                Создать субстанцию
+            </Button>
         </>
     )
 }

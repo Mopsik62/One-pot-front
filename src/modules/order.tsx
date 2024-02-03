@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-export const order = async(substances: string, userToken: string, additionalConditions: string): Promise<AxiosResponse> => {
+export const order = async(substances: string, userToken: string, additionalConditions: string, status: string): Promise<AxiosResponse> => {
 
     const config = {
         headers: {
@@ -13,6 +13,7 @@ export const order = async(substances: string, userToken: string, additionalCond
         {
             'substances': substances,
             'additionalConditions': additionalConditions,
+            'status': status,
         },
         config
 

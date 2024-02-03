@@ -8,6 +8,8 @@ import { getSyntheses } from './modules/get-syntheses.ts'
 import { Syntheses } from './modules/ds'
 import { getSynthesisSubstances } from './modules/get-synthesis-substances.tsx'
 import SynthesesFilter from './components/SynthesesFilters.tsx'
+import { deleteSynthesis } from './modules/delete-synthesis'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -15,6 +17,7 @@ const SynthesesPage: FC = () => {
     const { userToken, userRole } = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
 
     const [synthesesArray, setSynthesesArray] = useState<string[][]>([])
+    const navigate = useNavigate()
 
     useEffect(() => {
 
@@ -52,6 +55,13 @@ const SynthesesPage: FC = () => {
 
 
                     var synthesisArray:string[] = []
+                    if (userRole?.toString() == 'Moderator') {
+                        if (synthesis.User_name) {
+                            synthesisArray.push(synthesis.User_name)
+                        } else {
+                            synthesisArray.push('Не удалось распознать пользователя')
+                        }
+                    }
                     synthesisArray.push(synthesis.ID.toString())
                     synthesisArray.push(synthesis.Status)
                     synthesisArray.push(synthesis.Name)
@@ -60,20 +70,47 @@ const SynthesesPage: FC = () => {
                     synthesisArray.push(synthesis.Additional_conditions)
                     if (synthesis.Date_created)
                     {
-                        synthesisArray.push(synthesis.Date_created)
+                        const originalDate = synthesis.Date_created.substring(0, 10)
+                        const dateObject = new Date(originalDate);
+                        const day = dateObject.getDate().toString().padStart(2, '0'); // День
+                        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц (нумерация месяцев начинается с 0)
+                        const year = dateObject.getFullYear(); // Год
+                        const formattedDate = `${day}-${month}-${year}`;
+                        synthesisArray.push(formattedDate)
                     }
                     if (synthesis.Date_processed)
-                    {
-                        synthesisArray.push(synthesis.Date_processed)
+                    {   if (synthesis.Date_processed == "0001-01-01T00:00:00Z") {
+                        synthesisArray.push("-")
+                    } else {
+                        const originalDate = synthesis.Date_processed.substring(0, 10)
+                        const dateObject = new Date(originalDate);
+                        const day = dateObject.getDate().toString().padStart(2, '0'); // День
+                        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц (нумерация месяцев начинается с 0)
+                        const year = dateObject.getFullYear(); // Год
+                        const formattedDate = `${day}-${month}-${year}`;
+                        synthesisArray.push(formattedDate)
+                     }
                     }
                     if (synthesis.Date_finished)
                     {
-                        synthesisArray.push(synthesis.Date_finished)
+                        if (synthesis.Date_finished == "0001-01-01T00:00:00Z") {
+                            synthesisArray.push("-")
+                        } else {
+                            const originalDate = synthesis.Date_finished.substring(0, 10)
+                            const dateObject = new Date(originalDate);
+                            const day = dateObject.getDate().toString().padStart(2, '0'); // День
+                            const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц (нумерация месяцев начинается с 0)
+                            const year = dateObject.getFullYear(); // Год
+                            const formattedDate = `${day}-${month}-${year}`;
+                            synthesisArray.push(formattedDate)
+                        }
                     }
+
 
                     arr.push(synthesisArray)
                 }
                 setSynthesesArray(arr);
+
             }
         }
         loadSyntheses()
@@ -85,9 +122,8 @@ const SynthesesPage: FC = () => {
         // Очистка интервала при размонтировании компонента
         return () => clearInterval(intervalId);
 
-        console.log(userRole?.toString() == 'Moderator')
 
-    }, [])
+    }, [synthesesArray])
 
     if (!userToken) {
         return (
@@ -97,13 +133,30 @@ const SynthesesPage: FC = () => {
         )
     }
 
+    const cancelSynthesis = async(event: React.MouseEvent<HTMLButtonElement>) => {
+        console.log(event.currentTarget.id)
+        const synthesis_id = parseInt(event.currentTarget.id, 10)
+        if (!synthesis_id) {
+            return
+        }
+
+        const result = await deleteSynthesis(userToken, synthesis_id)
+        if (result.status == 200) {
+            navigate('/One-pot-front/syntheses')
+        }
+    }
+
     return (
         <>
             <h1>Синтезы</h1>
             <SynthesesFilter></SynthesesFilter>
+            
             <Table>
                 <thead className='thead-dark'>
                 <tr>
+                    {((userRole?.toString() == 'Moderator')) &&
+                        <th scope='col'>Создатель</th>
+                    }
                     <th scope='col'>ID</th>
                     <th scope='col'>Статус</th>
                     <th scope='col'>Название</th>
@@ -113,24 +166,37 @@ const SynthesesPage: FC = () => {
                     <th scope='col'>Дата обработки</th>
                     <th scope='col'>Дата завершения</th>
                     <th scope='col'></th>
+                    {(userRole?.toString() == 'User') &&
+                        <th scope='col'></th>
+                    }
                 </tr>
 
                 </thead>
                 <tbody>
                 {synthesesArray.map((rowContent, rowID) => (
                     <tr key={rowID}>
+
                         {rowContent.map((val, rowID) => (
                             <td key={rowID}>{val}</td>
                         ))
                         }
                         {((userRole?.toString() == 'Moderator') || (userRole?.toString() == 'Admin')) &&
                             <td>
-                                <Button href={'/One-pot-front/synthesis_edit?synthesis_id=' + synthesesArray[rowID][0]}>Изменить</Button>
+                                <Button href={'/One-pot-front/synthesis_edit?synthesis_id=' + synthesesArray[rowID][1]}>Изменить</Button>
                             </td>
                         }
                         {(userRole?.toString() == 'User') &&
                             <td>
                                 <Button href={'/One-pot-front/synthesis?synthesis_id=' + synthesesArray[rowID][0]}>Просмотр</Button>
+                            </td>
+                        }
+                        {(userRole?.toString() === 'User' && synthesesArray[rowID][1] === 'Черновик') &&
+                            <td>
+                                <Button variant='danger'
+                                        id={synthesesArray[rowID][Number((userRole?.toString() === 'Moderator'))]}
+                                        onClick={cancelSynthesis}>
+                                    Отменить
+                                </Button>
                             </td>
                         }
                     </tr>

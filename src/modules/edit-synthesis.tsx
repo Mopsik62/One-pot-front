@@ -1,7 +1,6 @@
-import {Syntheses} from './ds'
 import axios from 'axios';
 
-export const editSynthesis = async(userToken = '', synthesis: Syntheses): Promise<string> => {
+export const editSynthesis = async(userToken = '', synthesis_id: number, name: string, addCond: string  ): Promise<string> => {
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -9,10 +8,10 @@ export const editSynthesis = async(userToken = '', synthesis: Syntheses): Promis
         },
     }
     return axios.put(
-        '/api/syntheses/' + synthesis.ID + '/edit_user',
+        '/api/syntheses/' + synthesis_id + '/edit_user',
         {
-            'Name': synthesis.Name,
-            'Additional_conditions': synthesis.Additional_conditions,
+            'Name': name,
+            'Additional_conditions': addCond,
         },
         config
 

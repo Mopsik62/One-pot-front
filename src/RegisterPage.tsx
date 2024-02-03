@@ -1,20 +1,21 @@
-import { FC, useEffect, useState } from 'react'
-// import { useSelector } from 'react-redux/es/hooks/useSelector'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import {FC, useEffect, useState} from 'react'
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import {Button, Spinner, Modal, FormGroup, Form, FormLabel, Row, Col} from 'react-bootstrap'
 
 import store, { useAppDispatch } from './store/store'
-import { loginUser } from './modules/authActions'
+import { registerUser } from './modules/authActions';
 
 interface InputChangeInterface {
-    target: HTMLInputElement
+    target: HTMLInputElement;
 }
 
-const AuthPage: FC = () => {
+
+const RegisterPage: FC = () => {
+
     const {userToken, loading, userName, success} = useSelector(
-        (state: ReturnType<typeof store.getState>) => state.auth
+        (state: ReturnType<typeof store.getState> ) => state.auth
     )
 
     const dispatch = useAppDispatch()
@@ -29,7 +30,6 @@ const AuthPage: FC = () => {
     const handleRegisterModalClose = () => {
         setShowRegisterModal(false)
     }
-
     const handleLoginChange = (event: InputChangeInterface) => {
         setLogin(event.target.value)
     }
@@ -38,12 +38,10 @@ const AuthPage: FC = () => {
         setPassword(event.target.value)
     }
 
-    const sendLogin = async () => {
-        setShowRegisterModal(false)
-        await dispatch(loginUser({login: login, password: password}))
-        window.location.reload()
+    const sendRegister = async () => {
+        setShowRegisterModal(true)
+        dispatch(registerUser({login: login, password: password}));0
     }
-
 
     useEffect(() => {
         if (userToken && userName) {
@@ -60,11 +58,13 @@ const AuthPage: FC = () => {
                     <Modal.Title>Регистрация прошла успешно!</Modal.Title>
                 </Modal.Header>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleRegisterModalClose}>Закрыть</Button>
+                    <Button variant="secondary" onClick={handleRegisterModalClose}>
+                        Закрыть
+                    </Button>
                 </Modal.Footer>
             </Modal>
             <Form style={{width: '400px', marginLeft: 'auto', marginRight: 'auto'}}>
-                <h1>Вход в систему</h1>
+                <h1>Регистрация</h1>
                 <FormGroup>
                     <Row>
                         <Col>
@@ -97,17 +97,19 @@ const AuthPage: FC = () => {
                 </FormGroup>
                 <p></p>
                 <Row>
-                    <Button onClick={sendLogin} disabled={loading}>Войти</Button>
+                    <Button onClick={sendRegister} disabled={loading}>Зарегистрироваться</Button>
                 </Row>
                 <p></p>
                 <Row>
-                    <Button disabled={loading} href="/One-pot-front/register">Регистрация</Button>
+                    <Button disabled={loading} href="/One-pot-front/auth">Перейти к авторизации</Button>
                 </Row>
                 <p></p>
                 {loading ? <Spinner /> : ''}
             </Form>
         </div>
+
+
     )
 }
 
-export default AuthPage
+export default RegisterPage

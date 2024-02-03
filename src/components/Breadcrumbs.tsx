@@ -7,34 +7,45 @@ function Breadcrumbs() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString)
     const substance_name = urlParams.get('substance_name')
-    const name_pattern = urlParams.get('name_pattern')
+    const name = urlParams.get('name')
+    let synthesis_id = urlParams.get('synthesis_id')
+    if (!synthesis_id) {
+        synthesis_id = '-'
+    }
 
     return (
         <Breadcrumb>
-            <Breadcrumb.Item href="/One-pot-front/">Домашняя страница</Breadcrumb.Item>
+            {(window.location.pathname == "/One-pot-front/"
+                    || window.location.pathname == "/One-pot-front/mod_substances"
+                    || window.location.pathname == "/One-pot-front/substance"
+                    || window.location.pathname == "/One-pot-front/substance") &&
+                <Breadcrumb.Item href="/One-pot-front/">Субстанции</Breadcrumb.Item>
+            }
+            {(window.location.pathname == "/One-pot-front/substance"
+                    || window.location.pathname == "/One-pot-front/substance_edit") &&
+                <Breadcrumb.Item active>{substance_name ? substance_name : name}</Breadcrumb.Item>
+            }
+
             {window.location.pathname == '/One-pot-front/auth' &&
                 <Breadcrumb.Item>Вход</Breadcrumb.Item>
+            }
+            {window.location.pathname == '/One-pot-front/register' &&
+                <Breadcrumb.Item>Регистрация</Breadcrumb.Item>
             }
             {window.location.pathname == '/One-pot-front/account' &&
                 <Breadcrumb.Item>Аккаунт</Breadcrumb.Item>
             }
-            {window.location.pathname == '/One-pot-front/syntheses' &&
-                <Breadcrumb.Item>Синтезы</Breadcrumb.Item>
+            {(window.location.pathname == '/One-pot-front/syntheses'
+                    || window.location.pathname == '/One-pot-front/synthesis'
+                    || window.location.pathname == '/One-pot-front/synthesis_edit') &&
+                <Breadcrumb.Item href="/One-pot-front/syntheses">Синтезы</Breadcrumb.Item>
             }
-            {(substance_name != null && name_pattern === null) &&
-                <>
-                    <Breadcrumb.Item active> Субстанция </Breadcrumb.Item>
-                    <Breadcrumb.Item href = {window.location.search}>{substance_name}</Breadcrumb.Item>
-                </>
-            }
-            {(name_pattern != null && substance_name === null) &&
-                <>
-                    <Breadcrumb.Item active> Поиск </Breadcrumb.Item>
-                    <Breadcrumb.Item href = {window.location.search}>{name_pattern}</Breadcrumb.Item>
-                </>
+            {(window.location.pathname == '/One-pot-front/synthesis'
+                    || window.location.pathname == '/drones-front/synthesis_edit') &&
+                <Breadcrumb.Item active>{parseInt(synthesis_id, 10) ? synthesis_id : '-'}</Breadcrumb.Item>
             }
             {window.location.pathname == '/One-pot-front/order' &&
-                <Breadcrumb.Item>Заказ</Breadcrumb.Item>
+                <Breadcrumb.Item>Корзина</Breadcrumb.Item>
             }
         </Breadcrumb>
     );

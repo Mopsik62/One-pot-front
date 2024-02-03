@@ -4,8 +4,10 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { getSynthesisSubstances } from "./modules/get-synthesis-substances.tsx";
 import store from "./store/store";
+import { useNavigate } from "react-router-dom";
+import { modApproveSynthesis } from "./modules/mod-approve-synthesis"
 
-import { Form, FormControl, FormGroup, Button, FormSelect, ListGroup, ListGroupItem, Modal, Row, Col, FormLabel } from "react-bootstrap";
+import { Container, Form, FormControl,  FormGroup, Button,ListGroup, ListGroupItem, Modal, Row, Col, FormLabel } from "react-bootstrap";
 
 import { setSynthesisSubstances } from "./modules/set-synthesis-substances.tsx";
 import { editSynthesis } from "./modules/edit-synthesis.tsx";
@@ -19,11 +21,11 @@ interface InputChangeInterface {
 }
 
 const SynthesisEditPage: FC = () => {
+    const navigate = useNavigate()
 
     const newSubstanceInputRef = useRef<any>(null)
     const additionalConditionsRef = useRef<any>(null)
     const nameRef = useRef<any>(null)
-    const statusRef = useRef<any>(null)
 
 
 
@@ -46,6 +48,7 @@ const SynthesisEditPage: FC = () => {
             if (synthesisIdString === null) {
                 return
             }
+            console.log(synthesisIdString)
             const synthesis = await getSynthesis(+synthesisIdString, userToken)
             setSynthesis(synthesis)
 
@@ -76,7 +79,6 @@ const SynthesisEditPage: FC = () => {
         var synthesis_id = 0
         var name = ''
         var additional_conditions = ''
-        var status = ''
 
         if (synthesis?.ID !== undefined) {
             synthesis_id = synthesis?.ID
@@ -87,16 +89,8 @@ const SynthesisEditPage: FC = () => {
         if (nameRef.current != null) {
             name = nameRef.current.value
         }
-        if (statusRef.current != null) {
-            status = statusRef.current.value
-        }
 
-         await editSynthesis(userToken, {
-            ID: synthesis_id,
-            Name: name,
-            Additional_conditions: additional_conditions,
-            Status: status,
-        })
+        await editSynthesis(userToken, synthesis_id, name, additional_conditions)
 
 
 
@@ -111,6 +105,40 @@ const SynthesisEditPage: FC = () => {
         }
 
     }
+
+    const modConfirmTrue = async() => {
+        if (!userToken || !synthesis?.ID) {
+            return
+        }
+
+        const result = await modApproveSynthesis(userToken, synthesis?.ID, 'True')
+        if (result.status == 200) {
+            navigate('/One-pot-front/syntheses')
+        }
+    }
+
+    const modConfirmEnd = async() => {
+        if (!userToken || !synthesis?.ID) {
+            return
+        }
+
+        const result = await modApproveSynthesis(userToken, synthesis?.ID, 'End')
+        if (result.status == 200) {
+            navigate('/One-pot-front/syntheses')
+        }
+    }
+
+    const modConfirmFalse = async() => {
+        if (!userToken || !synthesis?.ID) {
+            return
+        }
+
+        const result = await modApproveSynthesis(userToken, synthesis?.ID, 'False')
+        if (result.status == 200) {
+            navigate('/One-pot-front/syntheses')
+        }
+    }
+
 
     const removeSubstance = (removedSubstanceName: string) => {
         return (event: React.MouseEvent) => {
@@ -140,7 +168,7 @@ const SynthesisEditPage: FC = () => {
         }
 
 
-            setSubstanceNames(substanceNames.concat([newSubstance]))
+        setSubstanceNames(substanceNames.concat([newSubstance]))
         setNewSubstance('')
 
         if (newSubstanceInputRef.current != null) {
@@ -160,7 +188,7 @@ const SynthesisEditPage: FC = () => {
     }
 
     return(
-        <div style={{width: '600px'}}>
+        <>
             <Modal show = {showError} onHide={handleErrorClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Произошла ошибка, синтезис не был обновлён</Modal.Title>
@@ -181,40 +209,34 @@ const SynthesisEditPage: FC = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <h1>Редактирование синтеза #{synthesis?.ID}</h1>
-            <h4>Субстанции:</h4>
-            <ListGroup style={{width: '500px'}}>
-                {substanceNames?.map((substanceName, substanceID) => (
-                    <ListGroupItem key={substanceID}> {substanceName}
-                        <span className="pull-right button-group" style={{float: 'right'}}>
+            <Form style={{width: '600px', marginLeft: 'auto', marginRight: 'auto'}}>
+                <h1>Редактирование синтеза #{synthesis?.ID}</h1>
+                <h4>Субстанции:</h4>
+                <ListGroup style={{width: '500px'}}>
+                    {substanceNames?.map((substanceName, substanceID) => (
+                        <ListGroupItem key={substanceID}> {substanceName}
+                            <span className="pull-right button-group" style={{float: 'right'}}>
                         <Button variant="danger" onClick={removeSubstance(substanceName)}>Удалить</Button>
                     </span>
-                    </ListGroupItem>
-                ))
-                }
-            </ListGroup>
-            <Row>
-                <Col>
-                    <FormLabel>Добавить субстанцию:</FormLabel>
-                </Col>
-                <Col>
-                    <input ref={newSubstanceInputRef} onChange={handleNewSubstanceChange} className="form-control"></input>
-                </Col>
-                <Col>
-                    <Button onClick={addSubstance}>Добавить</Button>
-                </Col>
-            </Row>
-            <h4>Характеристики:</h4>
-            <Form>
+                        </ListGroupItem>
+                    ))
+                    }
+                </ListGroup>
+                <Row>
+                    <Col>
+                        <FormLabel>Добавить субстанцию:</FormLabel>
+                    </Col>
+                    <Col>
+                        <input ref={newSubstanceInputRef} onChange={handleNewSubstanceChange} className="form-control"></input>
+                    </Col>
+                    <Col>
+                        <Button onClick={addSubstance}>Добавить</Button>
+                    </Col>
+                </Row>
+                <h4>Характеристики:</h4>
+
                 <FormGroup>
-                    <label htmlFor="statusInput">Статус</label>
-                    <FormSelect id="statusInput" defaultValue={synthesis?.Status} ref={statusRef}>
-                        <option>Черновик</option>
-                        <option>Удалён</option>
-                        <option>Сформирован</option>
-                        <option>Завершён</option>
-                        <option>Отклонён</option>
-                    </FormSelect>
+                    <FormLabel>Статус: {synthesis?.Status}</FormLabel>
                 </FormGroup>
                 <FormGroup>
                     <label htmlFor="takeoffDate">Название</label>
@@ -224,15 +246,44 @@ const SynthesisEditPage: FC = () => {
                     <label htmlFor="arrivalDate">Доп. условия</label>
                     <FormControl id="arrivalDate" defaultValue={synthesis?.Additional_conditions} ref={additionalConditionsRef}></FormControl>
                 </FormGroup>
+                <Row>
+                    <Button onClick={sendChanges}>Сохранить изменения</Button>
+                </Row>
+                <p></p>
+                <Container>
+                    <Row>
+                        <Col>
+                            <Button onClick={modConfirmFalse} variant="danger" className="w-100">Отклонить</Button>
+                        </Col>
+                        <Col>
+                            {((synthesis?.Status == "Сформирован")) &&
 
+                                    <Button onClick={modConfirmTrue} variant="success" className="w-100">Одобрить</Button>
+
+                            }
+                            {((synthesis?.Status == "В работе")) &&
+
+                                <Button onClick={modConfirmEnd} variant="success" className="w-100">Завершить</Button>
+
+                            }
+                        </Col>
+                    </Row>
+                </Container>
+                <p></p>
+                <Row>
+                </Row>
+                <p></p>
+                <Row>
+                    <Button href='/One-pot-front/syntheses'>Синтезы</Button>
+                </Row>
+                <p></p>
+                <Row>
+                    <Button href='/One-pot-front/'>Домой</Button>
+                </Row>
+                <p></p>
             </Form>
-            <Button onClick={sendChanges}>Сохранить изменения</Button>
-            <p></p>
-            <Button href='/One-pot-front/syntheses'>К заказам</Button>
-            <p></p>
-            <Button href='/One-pot-front/'>Домой</Button>
-            <p></p>
-        </div>
+
+        </>
     )
 
 }
