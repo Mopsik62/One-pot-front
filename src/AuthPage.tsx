@@ -13,7 +13,7 @@ interface InputChangeInterface {
 }
 
 const AuthPage: FC = () => {
-    const {userToken, loading, userName, success} = useSelector(
+    const {userToken, loading, userName, success, error} = useSelector(
         (state: ReturnType<typeof store.getState>) => state.auth
     )
 
@@ -41,7 +41,12 @@ const AuthPage: FC = () => {
     const sendLogin = async () => {
         setShowRegisterModal(false)
         await dispatch(loginUser({login: login, password: password}))
-        window.location.reload()
+        //console.log (error != "error")
+        if (error == null) {
+
+                window.location.reload();
+
+        }
     }
 
 
@@ -94,6 +99,8 @@ const AuthPage: FC = () => {
                             />
                         </Col>
                     </Row>
+                    {error && <div style={{ color: 'red' }}>{"Неправильный логин или пароль!"}</div>}
+
                 </FormGroup>
                 <p></p>
                 <Row>

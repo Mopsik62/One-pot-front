@@ -1,6 +1,8 @@
 import {Substance} from './ds'
 import axios from 'axios';
-
+import AcetanhydrideImage from '../assets/Acetanhydride.png'
+import EpichlorohydrinImage from '../assets/Epichlorohydrin.png'
+import PhenylalanineImage from '../assets/L-Phenylalanine.png'
 
 export const getSubstance = async  (substanceName = ''): Promise<Substance> => {
     const config = {
@@ -19,7 +21,7 @@ export const getSubstance = async  (substanceName = ''): Promise<Substance> => {
                     Title: "Ацетангидрид",
                     Class: "Ангидрид",
                     Formula: "C4H6O3",
-                    Image: "http://127.0.0.1:9000/substances/default.jpg",
+                    Image: AcetanhydrideImage?.toString(),
                     Status: "Активно"
                 },
                 {
@@ -27,7 +29,7 @@ export const getSubstance = async  (substanceName = ''): Promise<Substance> => {
                     Title: "Эпихлоргидрин",
                     Class: "Эпоксид",
                     Formula: "C3H5CIO",
-                    Image: "http://127.0.0.1:9000/substances/default.jpg",
+                    Image: EpichlorohydrinImage?.toString(),
                     Status: "Активно"
                 },
                 {
@@ -35,7 +37,7 @@ export const getSubstance = async  (substanceName = ''): Promise<Substance> => {
                     Title: "L-фенилаланин",
                     Class: "Аминокислота",
                     Formula: "C9H11NO2",
-                    Image: "http://127.0.0.1:9000/substances/default.jpg",
+                    Image: PhenylalanineImage?.toString(),
                     Status: "Активно"
                 },];
 

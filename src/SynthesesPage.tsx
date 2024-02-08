@@ -30,8 +30,9 @@ const SynthesesPage: FC = () => {
                 let status = urlParams.get('status')
                 let startDate = urlParams.get('date1')
                 let endDate = urlParams.get('date2')
+                let creator = urlParams.get('creator')
 
-                syntheses = await getSyntheses(userToken?.toString(), status?.toString(), startDate?.toString(), endDate?.toString())
+                syntheses = await getSyntheses(userToken?.toString(), status?.toString(), startDate?.toString(), endDate?.toString(), creator?.toString())
                // console.log(syntheses)
                 // console.log(userToken)
 
@@ -105,6 +106,8 @@ const SynthesesPage: FC = () => {
                             synthesisArray.push(formattedDate)
                         }
                     }
+                    synthesisArray.push(synthesis.Time)
+
 
 
                     arr.push(synthesisArray)
@@ -113,11 +116,11 @@ const SynthesesPage: FC = () => {
 
             }
         }
-        loadSyntheses()
+        //loadSyntheses()
 
         const intervalId = setInterval(() => {
             loadSyntheses();
-        }, 5000);
+        }, 100);
 
         // Очистка интервала при размонтировании компонента
         return () => clearInterval(intervalId);
@@ -128,7 +131,7 @@ const SynthesesPage: FC = () => {
     if (!userToken) {
         return (
             <>
-                <h3> Для просмотра полётов вам необходимо войти в систему!</h3>
+                <h3> Для просмотра синтезов вам необходимо войти в систему!</h3>
             </>
         )
     }
@@ -165,6 +168,7 @@ const SynthesesPage: FC = () => {
                     <th scope='col'>Дата создания</th>
                     <th scope='col'>Дата обработки</th>
                     <th scope='col'>Дата завершения</th>
+                    <th scope='col'>Время синтеза</th>
                     <th scope='col'></th>
                     {(userRole?.toString() == 'User') &&
                         <th scope='col'></th>

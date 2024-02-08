@@ -158,7 +158,7 @@ const SubstanceEditPage: FC = () =>{
                     <label htmlFor="status">Статус</label>
                     <FormSelect id="status" defaultValue={substance?.Status} ref={statusRef}>
                         <option>Активно</option>
-                        <option>Удален</option>
+                        <option>Удалён</option>
                     </FormSelect>
                 </FormGroup>
                 <FormGroup>

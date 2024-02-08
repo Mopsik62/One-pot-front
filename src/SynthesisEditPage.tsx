@@ -25,6 +25,7 @@ const SynthesisEditPage: FC = () => {
 
     const newSubstanceInputRef = useRef<any>(null)
     const additionalConditionsRef = useRef<any>(null)
+    const TimeRef = useRef<any>(null)
     const nameRef = useRef<any>(null)
 
 
@@ -79,6 +80,7 @@ const SynthesisEditPage: FC = () => {
         var synthesis_id = 0
         var name = ''
         var additional_conditions = ''
+        var time =''
 
         if (synthesis?.ID !== undefined) {
             synthesis_id = synthesis?.ID
@@ -86,11 +88,14 @@ const SynthesisEditPage: FC = () => {
         if (additionalConditionsRef.current != null) {
             additional_conditions = additionalConditionsRef.current.value
         }
+        if (TimeRef.current != null) {
+            time = TimeRef.current.value
+        }
         if (nameRef.current != null) {
             name = nameRef.current.value
         }
 
-        await editSynthesis(userToken, synthesis_id, name, additional_conditions)
+        await editSynthesis(userToken, synthesis_id, name, additional_conditions, time)
 
 
 
@@ -239,12 +244,16 @@ const SynthesisEditPage: FC = () => {
                     <FormLabel>Статус: {synthesis?.Status}</FormLabel>
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="takeoffDate">Название</label>
-                    <FormControl id="takeoffDate" defaultValue={synthesis?.Name} ref={nameRef}></FormControl>
+                    <label htmlFor="Name">Название</label>
+                    <FormControl id="Name" defaultValue={synthesis?.Name} ref={nameRef}></FormControl>
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="arrivalDate">Доп. условия</label>
-                    <FormControl id="arrivalDate" defaultValue={synthesis?.Additional_conditions} ref={additionalConditionsRef}></FormControl>
+                    <label htmlFor="Conditions">Доп. условия</label>
+                    <FormControl id="Conditions" defaultValue={synthesis?.Additional_conditions} ref={additionalConditionsRef}></FormControl>
+                </FormGroup>
+                <FormGroup>
+                    <label htmlFor="Time">Время синтеза</label>
+                    <FormControl id="Time" defaultValue={synthesis?.Time} ref={TimeRef}></FormControl>
                 </FormGroup>
                 <Row>
                     <Button onClick={sendChanges}>Сохранить изменения</Button>

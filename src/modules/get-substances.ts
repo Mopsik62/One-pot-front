@@ -1,5 +1,8 @@
 import {Substance} from './ds'
 import axios from 'axios';
+import AcetanhydrideImage from '../assets/Acetanhydride.png'
+import EpichlorohydrinImage from '../assets/Epichlorohydrin.png'
+import PhenylalanineImage from '../assets/L-Phenylalanine.png'
 
 
 export interface GetSubstancesResponse {
@@ -13,7 +16,7 @@ const offline_substances: Substance[] =  [
         "Title": "Ацетангидрид",
         "Class": "Ангидрид",
         "Formula": "C4H6O3",
-        "Image": "http://127.0.0.1:9000/substances/default.jpg",
+        "Image": AcetanhydrideImage?.toString(),
         "Status": "Активно"
     },
     {
@@ -21,7 +24,7 @@ const offline_substances: Substance[] =  [
         "Title": "Эпихлоргидрин",
         "Class": "Эпоксид",
         "Formula": "C3H5CIO",
-        "Image": "http://127.0.0.1:9000/substances/default.jpg",
+        "Image": EpichlorohydrinImage?.toString(),
         "Status": "Активно"
     },
     {
@@ -29,18 +32,20 @@ const offline_substances: Substance[] =  [
         "Title": "L-фенилаланин",
         "Class": "Аминокислота",
         "Formula": "C9H11NO2",
-        "Image": "http://127.0.0.1:9000/substances/default.jpg",
+        "Image": PhenylalanineImage?.toString(),
         "Status": "Активно"
     },];
 
-export const getSubstances = async (namePattern = '') : Promise<GetSubstancesResponse> => {
+export const getSubstances = async (userToken ='',namePattern = '', status = '') : Promise<GetSubstancesResponse> => {
     const config = {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userToken
+
         },
     }
     return axios.get(
-        '/api/substances?name_pattern=' + String(namePattern),
+        '/api/substances?name_pattern=' + String(namePattern) + '&status=' + status,
         config)
         .then((response) => response.data)
 

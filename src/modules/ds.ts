@@ -17,6 +17,7 @@ export interface Syntheses {
     Date_finished?:  string
     Moderator?:             string
     User_name?:             string
+    Time: string
 }
 
 export interface Substance {
@@ -38,5 +39,6 @@ export interface SynthesisWithSubstances {
     Date_finished:  string
     Moderator:             string
     User_name:             string
+    Time: string
     Substances: Substance[];
 }

@@ -31,7 +31,7 @@ const SubstancesFilter: FC = () => {
         <div style={{border: '1px solid black'}}>
             <Row>
                 <div className="col-2">
-                    <FormLabel>Имя:</FormLabel>
+                    <FormLabel>Название:</FormLabel>
                 </div>
                 <div className="col-2">
                     <input ref={nameRef} defaultValue={substanceName?.toString()} className="form-control"></input>

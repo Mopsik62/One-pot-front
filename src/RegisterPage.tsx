@@ -14,7 +14,7 @@ interface InputChangeInterface {
 
 const RegisterPage: FC = () => {
 
-    const {userToken, loading, userName, success} = useSelector(
+    const {userToken, loading, userName, success, error} = useSelector(
         (state: ReturnType<typeof store.getState> ) => state.auth
     )
 
@@ -40,7 +40,7 @@ const RegisterPage: FC = () => {
 
     const sendRegister = async () => {
         setShowRegisterModal(true)
-        dispatch(registerUser({login: login, password: password}));0
+        dispatch(registerUser({login: login, password: password}));
     }
 
     useEffect(() => {
@@ -96,6 +96,8 @@ const RegisterPage: FC = () => {
                     </Row>
                 </FormGroup>
                 <p></p>
+                {error && <div style={{ color: 'red' }}>{"Пользователь с таким именем уже есть в системе!"}</div>}
+
                 <Row>
                     <Button onClick={sendRegister} disabled={loading}>Зарегистрироваться</Button>
                 </Row>

@@ -21,7 +21,7 @@ const ModSubstancesPage : FC = () => {
 
         const loadSubstances = async()  => {
 
-            const result = await getSubstances(String(substanceName))
+            const result = await getSubstances(String(userToken), String(substanceName), "All")
             if (result.Substances) {
             var arr: string[][] = []
             for (let substance of result.Substances) {

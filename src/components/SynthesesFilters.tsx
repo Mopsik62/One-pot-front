@@ -27,6 +27,7 @@ const SynthesesFilter: FC = () => {
         let status = statusRef.current.value
         let startDate = startDateRef.current.value
         let endDate = endDateRef.current.value
+        let synthesisCreator = synthesisCreatorRef.current.value
         // if (startDate) {
         //     startDate += ':00Z';
         // }
@@ -38,6 +39,8 @@ const SynthesesFilter: FC = () => {
         dispatch(filtersSlice.actions.setSynthesisStatus(status))
         dispatch(filtersSlice.actions.setStartDate(startDate))
         dispatch(filtersSlice.actions.setEndDate(endDate))
+        dispatch(filtersSlice.actions.setSynthesisCreator(synthesisCreator))
+
 
         if (status == "Все") {
             status = ""
@@ -45,7 +48,7 @@ const SynthesesFilter: FC = () => {
 
         //2024-02-01T15:25:00Z
         let url = '/One-pot-front/syntheses?status=' + status;
-        url += '&date1=' + startDate + '&date2=' + endDate
+        url += '&date1=' + startDate + '&date2=' + endDate + '&creator=' + synthesisCreator
 
         navigate(url)
         window.location.reload()
@@ -61,7 +64,7 @@ const SynthesesFilter: FC = () => {
                     <Col>
                         <FormSelect ref={statusRef} defaultValue={synthesisStatus?.toString()}>
                             <option>В работе</option>
-                            <option>Завершена</option>
+                            <option>Завершён</option>
                             <option>Отклонён</option>
                             <option>Все</option>
                         </FormSelect>

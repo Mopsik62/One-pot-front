@@ -29,7 +29,7 @@ const SubstancesPage: FC = () => {
 
         const loadSubstances = async()  => {
 
-            const result   = await getSubstances(String(substanceName))
+            const result   = await getSubstances(String(userToken), String(substanceName))
            // console.log(result)
             if (result.Substances ) {
                 setSubstances(result.Substances)

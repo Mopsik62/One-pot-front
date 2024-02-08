@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction, ActionReducerMapBuilder } from "@reduxjs/toolkit"
 import { registerUser, loginUser, logoutUser } from "../modules/authActions"
+//import {Simulate} from "react-dom/test-utils";
+//import error = Simulate.error;
 
 const userToken = localStorage.getItem('userToken') || ''
 const userName = localStorage.getItem('userName') || ''
@@ -35,29 +37,39 @@ const authSlice = createSlice({
             .addCase(registerUser.pending, (state) => {
                 state.loading = true
                 state.error = null
+                console.log("reg1")
             })
             .addCase(registerUser.fulfilled, (state) => {
                 state.loading = false
                 state.success = true
+                console.log("reg2")
+
             })
             .addCase(registerUser.rejected, (state, action: PayloadAction<any>) => {
                 state.loading = false
-                state.error = action.payload
+                state.error = "error"
+
+                console.log(action)
+
             })
             .addCase(loginUser.pending, (state) => {
                 state.loading = true
                 state.error = null
+
             })
             .addCase(loginUser.fulfilled, (state, action: PayloadAction<any>) => {
                 state.loading = false
                 state.success = true
                 state.userToken = action.payload.access_token
                 state.userName = action.payload.login
+                console.log("rejected2")
+
             })
             .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
                 state.loading = false
                 state.success = false
-                state.error = action.payload
+                console.log(action)
+                state.error = "error"
             })
             .addCase(logoutUser.pending, (state) => {
                 state.loading = true

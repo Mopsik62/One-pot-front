@@ -39,6 +39,7 @@ const SynthesisPage: FC = () => {
 
     const newSubstanceInputRef = useRef<any>(null)
     const additionalConditionsRef = useRef<any>(null)
+    const NameRef = useRef<any>(null)
 
     useEffect(() => {
         const queryString = window.location.search;
@@ -55,7 +56,7 @@ const SynthesisPage: FC = () => {
             }
             const synthesis = await getSynthesis(+synthesisIdString, userToken)
             setSynthesis(synthesis)
-
+            console.log(synthesis)
             if (userToken === null) {
                 return
             }
@@ -90,14 +91,18 @@ const SynthesisPage: FC = () => {
 
         }
         let additionalConditions = additionalConditionsRef.current.value
+        let name = NameRef.current.value
 
 
         if (!additionalConditions) {
             additionalConditions = ""
         }
+        if (!name) {
+            name = ""
+        }
 
 
-        await editSynthesis(userToken, synthesis?.ID, synthesis.Name, additionalConditions)
+        await editSynthesis(userToken, synthesis?.ID, name, additionalConditions, synthesis?.Time)
     }
     const removeSubstance = async(event: React.MouseEvent<HTMLButtonElement>) => {
         let removedSubstanceName = event.currentTarget.id
@@ -216,6 +221,9 @@ const SynthesisPage: FC = () => {
             <p></p>
             <FormLabel>Статус: {synthesis?.Status}</FormLabel>
             <p></p>
+            <FormLabel>Время: {synthesis?.Time}</FormLabel>
+            <p></p>
+
 
             {(synthesis?.Status == "Черновик" && (synthesis.User_name == userName || userRole == "Moderator")) &&
                 <>
@@ -231,6 +239,22 @@ const SynthesisPage: FC = () => {
                     <FormLabel>Доп условия: {synthesis?.Additional_conditions}</FormLabel>
                 </>
             }
+            <p></p>
+            {(synthesis?.Status == "Черновик" && (synthesis.User_name == userName || userRole == "Moderator")) &&
+                <>
+                    <FormLabel>Название:</FormLabel>
+                    <input
+                        className="form-control"
+                        ref={NameRef}
+                    />
+                </>
+            }
+            {!(synthesis?.Status == "Черновик" && (synthesis.User_name == userName || userRole == "Moderator")) &&
+                <>
+                    <FormLabel>Название: {synthesis?.Name}</FormLabel>
+                </>
+            }
+
             {(synthesis?.Status == "Черновик" && synthesis.User_name == userName) &&
                 <Row>
                     <p></p>

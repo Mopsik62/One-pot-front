@@ -18,7 +18,7 @@ function Breadcrumbs() {
             {(window.location.pathname == "/One-pot-front/"
                     || window.location.pathname == "/One-pot-front/mod_substances"
                     || window.location.pathname == "/One-pot-front/substance"
-                    || window.location.pathname == "/One-pot-front/substance") &&
+                    || window.location.pathname == "/One-pot-front/substance_edit") &&
                 <Breadcrumb.Item href="/One-pot-front/">Субстанции</Breadcrumb.Item>
             }
             {(window.location.pathname == "/One-pot-front/substance"
@@ -41,7 +41,7 @@ function Breadcrumbs() {
                 <Breadcrumb.Item href="/One-pot-front/syntheses">Синтезы</Breadcrumb.Item>
             }
             {(window.location.pathname == '/One-pot-front/synthesis'
-                    || window.location.pathname == '/drones-front/synthesis_edit') &&
+                    || window.location.pathname == '/One-pot-front/synthesis_edit') &&
                 <Breadcrumb.Item active>{parseInt(synthesis_id, 10) ? synthesis_id : '-'}</Breadcrumb.Item>
             }
             {window.location.pathname == '/One-pot-front/order' &&
