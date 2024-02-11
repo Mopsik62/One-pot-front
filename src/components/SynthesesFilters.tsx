@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, } from "react";
 import { useSelector } from "react-redux";
 import { Form, FormLabel, FormSelect, Row, Col, Button } from "react-bootstrap";
 import { useRef } from "react";
@@ -23,36 +23,50 @@ const SynthesesFilter: FC = () => {
         (state: ReturnType<typeof store.getState> ) => state.auth
     )
 
-    const applyFilters = () => {
-        let status = statusRef.current.value
-        let startDate = startDateRef.current.value
-        let endDate = endDateRef.current.value
-        let synthesisCreator = synthesisCreatorRef.current.value
-        // if (startDate) {
-        //     startDate += ':00Z';
-        // }
-        //
-        // if (endDate) {
-        //     endDate += ':00Z'
-        // }
-        console.log(startDate)
-        dispatch(filtersSlice.actions.setSynthesisStatus(status))
-        dispatch(filtersSlice.actions.setStartDate(startDate))
-        dispatch(filtersSlice.actions.setEndDate(endDate))
-        dispatch(filtersSlice.actions.setSynthesisCreator(synthesisCreator))
+    useEffect(() => {
+        const applyFiltersAndDispatch = () => {
+            let status = statusRef.current.value;
+            let startDate = startDateRef.current.value;
+            let endDate = endDateRef.current.value;
+            let synthesisCreator =
+                userRole === "Moderator" ? synthesisCreatorRef.current.value : "";
 
+            dispatch(filtersSlice.actions.setSynthesisStatus(status));
+            dispatch(filtersSlice.actions.setStartDate(startDate));
+            dispatch(filtersSlice.actions.setEndDate(endDate));
+            dispatch(filtersSlice.actions.setSynthesisCreator(synthesisCreator));
 
-        if (status == "Все") {
-            status = ""
-        }
+            if (status === "Все") {
+                status = "";
+            }
 
-        //2024-02-01T15:25:00Z
-        let url = '/One-pot-front/syntheses?status=' + status;
-        url += '&date1=' + startDate + '&date2=' + endDate + '&creator=' + synthesisCreator
+            // Construct URL
+            let url =
+                "/One-pot-front/syntheses?status=" +
+                status +
+                "&date1=" +
+                startDate +
+                "&date2=" +
+                endDate +
+                "&creator=" +
+                synthesisCreator;
 
-        navigate(url)
-        window.location.reload()
-    }
+            navigate(url);
+            //window.location.reload();
+        };
+
+        statusRef.current.addEventListener("input", applyFiltersAndDispatch);
+        startDateRef.current.addEventListener("input", applyFiltersAndDispatch);
+        endDateRef.current.addEventListener("input", applyFiltersAndDispatch);
+        synthesisCreatorRef.current.addEventListener("input", applyFiltersAndDispatch);
+
+        return () => {
+            statusRef.current.removeEventListener("input", applyFiltersAndDispatch);
+            startDateRef.current.removeEventListener("input", applyFiltersAndDispatch);
+            endDateRef.current.removeEventListener("input", applyFiltersAndDispatch);
+            synthesisCreatorRef.current.removeEventListener("input", applyFiltersAndDispatch);
+        };
+    }, [statusRef, startDateRef, endDateRef, synthesisCreatorRef, dispatch, navigate, userRole]);
 
     return (
         <div style={{border: '1px solid black'}}>
@@ -63,13 +77,13 @@ const SynthesesFilter: FC = () => {
                     </Col>
                     <Col>
                         <FormSelect ref={statusRef} defaultValue={synthesisStatus?.toString()}>
-                            <option>В работе</option>
-                            <option>Завершён</option>
+                            <option>Сформирован</option>
+                            <option>Одобрен</option>
                             <option>Отклонён</option>
                             <option>Все</option>
                         </FormSelect>
                     </Col>
-                    {userRole?.toString() == 'Moderator' &&
+                    {userRole?.toString() === 'Moderator' &&
                         <>
                             <Col>
                                 <FormLabel>Создатель:</FormLabel>
@@ -104,7 +118,6 @@ const SynthesesFilter: FC = () => {
                         />
                     </Col>
                 </Row>
-                <Button onClick={applyFilters}>Поиск</Button>
             </Form>
         </div>
     )

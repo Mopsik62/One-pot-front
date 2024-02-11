@@ -83,10 +83,10 @@ const SynthesisPage: FC = () => {
 
 
         const result = await approveSynthesis(userToken, synthesis?.ID)
-        if (result.status == 201) {
+        if (result.status == 200) {
             dispatch(cartSlice.actions.setAdditionalConditions(null))
             dispatch(cartSlice.actions.setDraftID(null))
-
+            console.log("")
             navigate('/One-pot-front/syntheses')
 
         }
@@ -104,6 +104,26 @@ const SynthesisPage: FC = () => {
 
         await editSynthesis(userToken, synthesis?.ID, name, additionalConditions, synthesis?.Time)
     }
+
+    const save =  async () => {
+        if (!userToken || !synthesis?.ID) {
+            return
+        }
+
+        let additionalConditions = additionalConditionsRef.current.value
+        let name = NameRef.current.value
+
+
+        if (!additionalConditions) {
+            additionalConditions = ""
+        }
+        if (!name) {
+            name = ""
+        }
+
+        await editSynthesis(userToken, synthesis?.ID, name, additionalConditions, synthesis?.Time)
+    }
+
     const removeSubstance = async(event: React.MouseEvent<HTMLButtonElement>) => {
         let removedSubstanceName = event.currentTarget.id
 
@@ -231,6 +251,8 @@ const SynthesisPage: FC = () => {
                     <input
                         className="form-control"
                         ref={additionalConditionsRef}
+                        defaultValue={synthesis.Additional_conditions}
+
                     />
                 </>
             }
@@ -246,6 +268,7 @@ const SynthesisPage: FC = () => {
                     <input
                         className="form-control"
                         ref={NameRef}
+                        defaultValue={synthesis.Name}
                     />
                 </>
             }
@@ -262,10 +285,11 @@ const SynthesisPage: FC = () => {
                 </Row>
             }
             <p></p>
-
-            <Row>
-                <Button href='/One-pot-front/syntheses'>Синтезы</Button>
-            </Row>
+                {(synthesis?.Status == "Черновик" && synthesis.User_name == userName) &&
+                    <Row>
+                        <Button onClick={save} variant="success">Сохранить </Button>
+                    </Row>
+                }
             <p></p>
             <Row>
                 <Button href='/One-pot-front/'>Домой</Button>

@@ -6,10 +6,11 @@ import { Table, Button} from 'react-bootstrap'
 import store from './store/store'
 import { getSyntheses } from './modules/get-syntheses.ts'
 import { Syntheses } from './modules/ds'
-import { getSynthesisSubstances } from './modules/get-synthesis-substances.tsx'
+//import { getSynthesisSubstances } from './modules/get-synthesis-substances.tsx'
 import SynthesesFilter from './components/SynthesesFilters.tsx'
 import { deleteSynthesis } from './modules/delete-synthesis'
 import { useNavigate } from 'react-router-dom'
+import {modApproveSynthesis} from "./modules/mod-approve-synthesis.tsx";
 
 
 
@@ -32,27 +33,27 @@ const SynthesesPage: FC = () => {
                 let endDate = urlParams.get('date2')
                 let creator = urlParams.get('creator')
 
-                syntheses = await getSyntheses(userToken?.toString(), status?.toString(), startDate?.toString(), endDate?.toString(), creator?.toString())
-               // console.log(syntheses)
-                // console.log(userToken)
-
+                syntheses = await getSyntheses(userToken?.toString(), status?.toString(), startDate?.toString(), endDate?.toString())
+                if (creator) {
+                    syntheses = syntheses.filter((synthesis) => synthesis.User_name.startsWith(creator));
+                }
                 if (!userToken) {
                     return
                 }
 
                 var arr: string[][] = []
                 for (let synthesis of syntheses) {
-                    const all = await getSynthesisSubstances(synthesis.ID, userToken)
-
-                        const substances = all.Substances
-                        const substance_names = []
-                    if (all){
-                        for (let substance of substances) {
-                            substance_names.push(substance.Title)
-                        }
-                    } else {
-                        substance_names.push('')
-                    }
+                    // const all = await getSynthesisSubstances(synthesis.ID, userToken)
+                    //
+                    //     const substances = all.Substances
+                    //     const substance_names = []
+                    // if (all){
+                    //     for (let substance of substances) {
+                    //         substance_names.push(substance.Title)
+                    //     }
+                    // } else {
+                    //     substance_names.push('')
+                    // }
 
 
                     var synthesisArray:string[] = []
@@ -66,7 +67,7 @@ const SynthesesPage: FC = () => {
                     synthesisArray.push(synthesis.ID.toString())
                     synthesisArray.push(synthesis.Status)
                     synthesisArray.push(synthesis.Name)
-                    synthesisArray.push(substance_names.toString().replace(new RegExp(',', 'g'), '\n'))
+                   // synthesisArray.push(substance_names.toString().replace(new RegExp(',', 'g'), '\n'))
 
                     synthesisArray.push(synthesis.Additional_conditions)
                     if (synthesis.Date_created)
@@ -74,10 +75,10 @@ const SynthesesPage: FC = () => {
                         const originalDate = synthesis.Date_created.substring(0, 10)
                         const dateObject = new Date(originalDate);
                         const day = dateObject.getDate().toString().padStart(2, '0'); // День
-                        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц (нумерация месяцев начинается с 0)
+                        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц
                         const year = dateObject.getFullYear(); // Год
                         const formattedDate = `${day}-${month}-${year}`;
-                        synthesisArray.push(formattedDate)
+                        synthesisArray.push(formattedDate + " " + synthesis.Date_created.substring(11, 19))
                     }
                     if (synthesis.Date_processed)
                     {   if (synthesis.Date_processed == "0001-01-01T00:00:00Z") {
@@ -86,10 +87,10 @@ const SynthesesPage: FC = () => {
                         const originalDate = synthesis.Date_processed.substring(0, 10)
                         const dateObject = new Date(originalDate);
                         const day = dateObject.getDate().toString().padStart(2, '0'); // День
-                        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц (нумерация месяцев начинается с 0)
+                        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц
                         const year = dateObject.getFullYear(); // Год
                         const formattedDate = `${day}-${month}-${year}`;
-                        synthesisArray.push(formattedDate)
+                        synthesisArray.push(formattedDate + " " + synthesis.Date_processed.substring(11, 19))
                      }
                     }
                     if (synthesis.Date_finished)
@@ -100,10 +101,10 @@ const SynthesesPage: FC = () => {
                             const originalDate = synthesis.Date_finished.substring(0, 10)
                             const dateObject = new Date(originalDate);
                             const day = dateObject.getDate().toString().padStart(2, '0'); // День
-                            const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц (нумерация месяцев начинается с 0)
+                            const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Месяц
                             const year = dateObject.getFullYear(); // Год
                             const formattedDate = `${day}-${month}-${year}`;
-                            synthesisArray.push(formattedDate)
+                            synthesisArray.push(formattedDate + " " + synthesis.Date_finished.substring(11, 19))
                         }
                     }
                     synthesisArray.push(synthesis.Time)
@@ -149,6 +150,24 @@ const SynthesesPage: FC = () => {
         }
     }
 
+    const modConfirmTrue = async(synthesisID) => {
+        if (!userToken) {
+            return
+        }
+        await modApproveSynthesis(userToken, synthesisID, 'True')
+
+    }
+
+
+    const modConfirmFalse = async (synthesisID) => {
+        if (!userToken) {
+            return;
+        }
+     await modApproveSynthesis(userToken, synthesisID, "False");
+
+    };
+
+
     return (
         <>
             <h1>Синтезы</h1>
@@ -163,7 +182,6 @@ const SynthesesPage: FC = () => {
                     <th scope='col'>ID</th>
                     <th scope='col'>Статус</th>
                     <th scope='col'>Название</th>
-                    <th scope='col'>Субстанции</th>
                     <th scope='col'>Доп. условия</th>
                     <th scope='col'>Дата создания</th>
                     <th scope='col'>Дата обработки</th>
@@ -184,11 +202,40 @@ const SynthesesPage: FC = () => {
                             <td key={rowID}>{val}</td>
                         ))
                         }
-                        {((userRole?.toString() == 'Moderator') || (userRole?.toString() == 'Admin')) &&
-                            <td>
-                                <Button href={'/One-pot-front/synthesis_edit?synthesis_id=' + synthesesArray[rowID][1]}>Изменить</Button>
-                            </td>
-                        }
+                            {((userRole?.toString() == 'Moderator') ) &&
+                                <td>
+                                    <div className="d-flex flex-column align-items-center">
+                                        <Button
+                                            href={synthesesArray[rowID][2] === 'Черновик' ?
+                                                '/One-pot-front/synthesis_edit?synthesis_id=' + synthesesArray[rowID][1] :
+                                                '/One-pot-front/synthesis?synthesis_id=' + synthesesArray[rowID][1]}
+                                            className="mb-2 w-100"
+                                        >
+                                            Просмотр
+                                        </Button>
+                                        {synthesesArray[rowID][2] === 'Сформирован' &&
+                                            <div className="d-flex">
+                                                <Button
+                                                    onClick={() => modConfirmFalse(synthesesArray[rowID][1])}
+                                                    variant="danger"
+                                                    className="mr-2"
+                                                >
+                                                    Отклонить
+                                                </Button>
+                                                <Button
+                                                    onClick={() => modConfirmTrue(synthesesArray[rowID][1])}
+                                                    variant="success"
+                                                    className="ml-2"
+                                                >
+                                                    Одобрить
+                                                </Button>
+                                            </div>
+                                        }
+                                    </div>
+                                </td>
+
+
+                            }
                         {(userRole?.toString() == 'User') &&
                             <td>
                                 <Button href={'/One-pot-front/synthesis?synthesis_id=' + synthesesArray[rowID][0]}>Просмотр</Button>

@@ -26,6 +26,10 @@ const Navigation: FC = () => {
             navigate('/One-pot-front/')
         }
     }
+    const goToCar = async() => {
+            navigate('/One-pot-front/synthesis?synthesis_id=' + String(draftID))
+
+    }
 
     return (
         <Navbar expand="lg" >
@@ -47,9 +51,13 @@ const Navigation: FC = () => {
             </Container>
             {userToken &&
                 <Navbar.Collapse className='justify-content-end'>
-                    {userToken && draftID != null &&
-                        <Nav.Link href={"/One-pot-front/synthesis?synthesis_id=" + String(draftID)}>Корзина</Nav.Link>
+                    {userToken &&
+                        <Button variant="primary" onClick={draftID !== null ? goToCar : undefined} disabled={draftID === null}>
+                            Корзина
+                        </Button>
                     }
+
+
                     <Nav.Item style={{marginLeft: '10px', marginRight: '10px', width: '170px'}}>Пользователь: {userName}</Nav.Item>
                     <Button onClick={sendLogout}>Выход</Button>
                 </Navbar.Collapse>

@@ -4,7 +4,6 @@ import './SubstancesPage.css'
 
 import { Substance } from './modules/ds'
 import { getSubstances } from './modules/get-substances.ts';
-import { getSynthesis } from './modules/get-synthesis.ts';
 
 import { Row, Col, Modal, Button, Container } from 'react-bootstrap'
 import SubstanceCard from './components/SubstanceCard.tsx';
@@ -34,14 +33,15 @@ const SubstancesPage: FC = () => {
             if (result.Substances ) {
                 setSubstances(result.Substances)
             }
+            console.log
 
 
             if (result.SynthesesChern && result.SynthesesChern != 0) {
                 dispatch(cartSlice.actions.setDraftID(result.SynthesesChern))
 
-                const chernSynthesis = await getSynthesis(result.SynthesesChern, userToken)
+               //const chernSynthesis = await getSynthesis(result.SynthesesChern, userToken)
                 console.log(result.SynthesesChern)
-                dispatch(cartSlice.actions.setAdditionalConditions(chernSynthesis.Additional_conditions))
+              //  dispatch(cartSlice.actions.setAdditionalConditions(chernSynthesis.Additional_conditions))
             } else {
                 dispatch(cartSlice.actions.setAdditionalConditions(null))
                 dispatch(cartSlice.actions.setDraftID(null))

@@ -122,16 +122,6 @@ const SynthesisEditPage: FC = () => {
         }
     }
 
-    const modConfirmEnd = async() => {
-        if (!userToken || !synthesis?.ID) {
-            return
-        }
-
-        const result = await modApproveSynthesis(userToken, synthesis?.ID, 'End')
-        if (result.status == 200) {
-            navigate('/One-pot-front/syntheses')
-        }
-    }
 
     const modConfirmFalse = async() => {
         if (!userToken || !synthesis?.ID) {
@@ -268,11 +258,6 @@ const SynthesisEditPage: FC = () => {
                             {((synthesis?.Status == "Сформирован")) &&
 
                                     <Button onClick={modConfirmTrue} variant="success" className="w-100">Одобрить</Button>
-
-                            }
-                            {((synthesis?.Status == "В работе")) &&
-
-                                <Button onClick={modConfirmEnd} variant="success" className="w-100">Завершить</Button>
 
                             }
                         </Col>
