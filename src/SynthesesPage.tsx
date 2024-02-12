@@ -1,13 +1,17 @@
 import { FC, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { Table, Button} from 'react-bootstrap'
+import { Table, Button, Row, Col, Form, FormLabel, FormSelect} from 'react-bootstrap'
 
 //import SynthesisCard from './components/SynthesisCard.tsx'
 import store from './store/store'
 import { getSyntheses } from './modules/get-syntheses.ts'
 import { Syntheses } from './modules/ds'
+
 //import { getSynthesisSubstances } from './modules/get-synthesis-substances.tsx'
-import SynthesesFilter from './components/SynthesesFilters.tsx'
+import filtersSlice from './store/filtersSlice'
+import { useAppDispatch } from "./store/store";
+import { useRef } from "react";
+
 import { deleteSynthesis } from './modules/delete-synthesis'
 import { useNavigate } from 'react-router-dom'
 import {modApproveSynthesis} from "./modules/mod-approve-synthesis.tsx";
@@ -16,27 +20,66 @@ import {modApproveSynthesis} from "./modules/mod-approve-synthesis.tsx";
 
 const SynthesesPage: FC = () => {
     const { userToken, userRole } = useSelector((state: ReturnType<typeof store.getState>) => state.auth)
+    const {synthesisStatus, startDate, endDate, synthesisCreator} = useSelector((state: ReturnType<typeof store.getState>) => state.filters)
 
     const [synthesesArray, setSynthesesArray] = useState<string[][]>([])
     const navigate = useNavigate()
 
+    const dispatch = useAppDispatch()
+
+    const statusRef = useRef<any>(null)
+    const startDateRef = useRef<any>(null)
+    const endDateRef = useRef<any>(null)
+    const synthesisCreatorRef = useRef<any>(null)
+
     useEffect(() => {
+        const applyFilters = () => {
+            let status = statusRef.current.value
+            let startDate = startDateRef.current.value
+            let endDate = endDateRef.current.value
+            let creator =
+                userRole === "Moderator" ? synthesisCreatorRef.current.value : "";
+
+
+
+
+            dispatch(filtersSlice.actions.setSynthesisStatus(status))
+            dispatch(filtersSlice.actions.setStartDate(startDate))
+            dispatch(filtersSlice.actions.setEndDate(endDate))
+            dispatch(filtersSlice.actions.setSynthesisCreator(creator))
+
+            if (status == "Все") {
+                status = ""
+            }
+        }
 
         const loadSyntheses = async()  => {
+            applyFilters()
+
+            let status = statusRef.current.value
+            let startDate = startDateRef.current.value
+            let endDate = endDateRef.current.value
+            let creator =
+                userRole === "Moderator" ? synthesisCreatorRef.current.value : "";
+
+            if (status == "Все") {
+                status = ""
+            }
+
             var syntheses: Syntheses[] = []
 
             if (userToken !== undefined) {
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString)
-                let status = urlParams.get('status')
-                let startDate = urlParams.get('date1')
-                let endDate = urlParams.get('date2')
-                let creator = urlParams.get('creator')
 
-                syntheses = await getSyntheses(userToken?.toString(), status?.toString(), startDate?.toString(), endDate?.toString())
-                if (creator) {
-                    syntheses = syntheses.filter((synthesis) => synthesis.User_name.startsWith(creator));
+                if (synthesisStatus == null) { //todo
+                    return;
                 }
+
+                syntheses = await getSyntheses(userToken?.toString(), status, startDate, endDate)
+                 if (creator) {
+                    syntheses = syntheses.filter((synthesis) => synthesis.User_name.startsWith(creator));
+                 }
+                console.log(synthesisCreator)
+
                 if (!userToken) {
                     return
                 }
@@ -108,6 +151,8 @@ const SynthesesPage: FC = () => {
                         }
                     }
                     synthesisArray.push(synthesis.Time)
+                   // console.log(synthesisArray)
+                   // console.log("dsadsad")
 
 
 
@@ -117,11 +162,14 @@ const SynthesesPage: FC = () => {
 
             }
         }
-        //loadSyntheses()
+
+        applyFilters()
+
+        loadSyntheses()
 
         const intervalId = setInterval(() => {
             loadSyntheses();
-        }, 100);
+        }, 1000);
 
         // Очистка интервала при размонтировании компонента
         return () => clearInterval(intervalId);
@@ -171,7 +219,56 @@ const SynthesesPage: FC = () => {
     return (
         <>
             <h1>Синтезы</h1>
-            <SynthesesFilter></SynthesesFilter>
+            <Form>
+                <Row>
+                    <Col>
+                        <FormLabel>Статус:</FormLabel>
+                    </Col>
+                    <Col>
+                        <FormSelect ref={statusRef} defaultValue={synthesisStatus?.toString()}>
+                            <option>Одобрен</option>
+                            <option>Завершён</option>
+                            <option>Отклонён</option>
+                            <option>Сформирован</option>
+                            <option>Все</option>
+                        </FormSelect>
+                    </Col>
+                    {userRole?.toString() == 'Moderator' &&
+                        <>
+                            <Col>
+                                <FormLabel>Создатель:</FormLabel>
+                            </Col>
+                            <Col>
+                                <input
+                                    defaultValue={synthesisCreator?.toString()}
+                                    ref={synthesisCreatorRef}
+                                />
+                            </Col>
+                        </>
+                    }
+                    <Col>
+                        <FormLabel>Создана с:</FormLabel>
+                    </Col>
+                    <Col>
+                        <input
+                            type="date"
+                            defaultValue={startDate?.toString()}
+                            ref={startDateRef}
+                        />
+                    </Col>
+                    <Col>
+                        <FormLabel>По:</FormLabel>
+                    </Col>
+                    <Col>
+                        <FormLabel></FormLabel>
+                        <input
+                            type="date"
+                            defaultValue={endDate?.toString()}
+                            ref={endDateRef}
+                        />
+                    </Col>
+                </Row>
+            </Form>
             
             <Table>
                 <thead className='thead-dark'>
